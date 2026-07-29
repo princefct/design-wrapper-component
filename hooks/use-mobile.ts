@@ -17,3 +17,23 @@ export function useIsMobile() {
 
   return !!isMobile
 }
+
+/**
+ * True when the device can actually hover (mouse/trackpad). Tailwind gates its
+ * `hover:` utilities behind `@media (hover: hover)`, so any affordance that is
+ * only revealed on hover simply does not exist on touch screens — those need a
+ * persistent control instead.
+ */
+export function useHasHover() {
+  const [hasHover, setHasHover] = React.useState(true)
+
+  React.useEffect(() => {
+    const mql = window.matchMedia("(hover: hover)")
+    const onChange = () => setHasHover(mql.matches)
+    mql.addEventListener("change", onChange)
+    setHasHover(mql.matches)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
+
+  return hasHover
+}

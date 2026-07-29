@@ -2,7 +2,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "radix-ui"
 
-import { useIsMobile } from "../../hooks/use-mobile"
+import { useIsMobile, useHasHover } from "../../hooks/use-mobile"
 import { cn } from "../../lib/utils"
 import { Button } from "./button"
 import { Input } from "./input"
@@ -18,6 +18,7 @@ import { Skeleton } from "./skeleton"
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "./tooltip"
 import { PanelLeftIcon } from "lucide-react"
@@ -125,6 +126,10 @@ function SidebarProvider({
 
   return (
     <SidebarContext.Provider value={contextValue}>
+      {/* SidebarMenuButton renders a Tooltip for its icon-mode label, which
+          needs a Radix TooltipProvider ancestor. Provide one here so hosts do
+          not have to remember to wrap the app; nesting another is harmless. */}
+      <TooltipProvider delayDuration={0}>
       <div
         data-slot="sidebar-wrapper"
         style={
@@ -142,6 +147,7 @@ function SidebarProvider({
       >
         {children}
       </div>
+      </TooltipProvider>
     </SidebarContext.Provider>
   )
 }
@@ -252,9 +258,12 @@ function Sidebar({
  * SidebarTrigger — on desktop the sidebar logo is the collapse control (see
  * Sidebar.jsx), so a second trigger in the page header is redundant and this
  * renders nothing. Hosts keep their existing `<SidebarTrigger />` markup and
- * get the new behaviour with no code change. On mobile the sidebar is a sheet
- * whose logo is unreachable while closed, so the trigger still renders there.
- * Pass `force` to opt back into always rendering it.
+ * get the new behaviour with no code change.
+ *
+ * It still renders where the logo affordance does not work: on mobile (the
+ * sidebar is a sheet, so the logo is unreachable while closed) and on any
+ * touch device, where the hover swap never fires and the control would be
+ * invisible. Pass `force` to opt back into always rendering it.
  */
 function SidebarTrigger({
   className,
@@ -263,8 +272,9 @@ function SidebarTrigger({
   ...props
 }: React.ComponentProps<typeof Button> & { force?: boolean }) {
   const { toggleSidebar, isMobile } = useSidebar()
+  const hasHover = useHasHover()
 
-  if (!force && !isMobile) return null
+  if (!force && !isMobile && hasHover) return null
 
   return (
     <Button

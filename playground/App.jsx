@@ -387,12 +387,25 @@ function Gallery({ view, setView, dark, setDark }) {
 
   // The library Sidebar (shadcn bedrock) drives the shell; view items are
   // action items with an explicit `active` flag.
-  const menuItems = VIEWS.map((v) => ({
-    icon: v.icon,
-    title: v.title,
-    active: view === v.key,
-    onClick: () => setView(v.key),
-  }));
+  const menuItems = [
+    ...VIEWS.map((v) => ({
+      icon: v.icon,
+      title: v.title,
+      active: view === v.key,
+      onClick: () => setView(v.key),
+    })),
+    // A nested entry so the Collapsible submenu path is previewable — including
+    // clicking it while the rail is collapsed, which expands the rail first.
+    {
+      icon: <Boxes className="size-5" />,
+      title: 'Nested example',
+      children: [
+        { title: 'Primitives', onClick: () => setView('primitives') },
+        { title: 'Charts', icon: <BarChart3 className="size-4" />, onClick: () => setView('charts') },
+        { title: 'No icon', onClick: () => setView('library') },
+      ],
+    },
+  ];
 
   return (
     <SidebarProvider defaultOpen={false}>
