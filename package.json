@@ -1,6 +1,6 @@
 {
   "name": "design-wrapper-component",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "EaglEye shared design system — shadcn/ui components, Tailwind v4 tokens. Consumed as source via the @design-pattern alias; ships a prebuilt stylesheet so it drops into any host with zero config.",
   "type": "module",
   "main": "index.js",
@@ -34,12 +34,10 @@
   "engines": {
     "pnpm": ">=11"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "@tailwindcss/oxide"
-    ]
-  },
+  "onlyBuiltDependencies": [
+    "@parcel/watcher",
+    "@tailwindcss/oxide"
+  ],
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18",
@@ -53,7 +51,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^2.30.0",
-    "echarts": "^5.5.0",
+    "echarts": "^6.1.0",
     "echarts-for-react": "^3.0.2",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",

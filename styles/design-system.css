@@ -199,6 +199,47 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* `no-scrollbar` is applied by the shadcn sidebar, command and combobox
+   scroll containers but has never been defined, so those panes fell back to
+   the platform scrollbar — on Chrome without the fluent-overlay flag that is
+   an opaque classic bar sitting on top of the sidebar rail. Define it. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+}
+
+/* Opt-in thin scrollbar for panes that should keep a visible affordance
+   (long tables, the right side panel). Overlay-styled, theme-aware. */
+@utility thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--sidebar-border) 90%, transparent)
+    transparent;
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklab, var(--sidebar-border) 90%, transparent);
+    border: 2px solid transparent;
+    background-clip: content-box;
+    border-radius: 9999px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklab, var(--muted-foreground) 55%, transparent);
+  }
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
 @layer base {
   * {
     border-color: var(--border);

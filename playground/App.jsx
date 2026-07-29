@@ -56,12 +56,14 @@ import {
 // ── Split-out demo views ─────────────────────────────────────────────
 import ChartsDemo from './demos/charts.jsx';
 import PrimitivesDemo from './demos/primitives.jsx';
+import ApiSurfaceDemo from './demos/api-surface.jsx';
 
 const VIEWS = [
   { key: 'library', title: 'Library', icon: <LayoutGrid className="size-5" /> },
   { key: 'primitives', title: 'Primitives', icon: <Boxes className="size-5" /> },
   { key: 'charts', title: 'Charts', icon: <BarChart3 className="size-5" /> },
   { key: 'states', title: 'States & Loaders', icon: <Loader className="size-5" /> },
+  { key: 'api', title: 'API Surface', icon: <Boxes className="size-5" /> },
   { key: 'error', title: 'Error Pages', icon: <Bug className="size-5" /> },
 ];
 
@@ -406,8 +408,9 @@ function Gallery({ view, setView, dark, setDark }) {
       <SidebarInset className="bg-background text-foreground">
         {/* Standard shadcn header (h-14, single row) */}
         <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background/80 px-4 backdrop-blur">
+          {/* Renders only on mobile now — desktop collapse lives on the logo */}
           <SidebarTrigger className="-ml-1" />
-          <Breadcrumb className="ml-1">
+          <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden sm:block">
                 <BreadcrumbLink href="#">EaglEye</BreadcrumbLink>
@@ -460,6 +463,7 @@ function Gallery({ view, setView, dark, setDark }) {
           {view === 'primitives' && <PrimitivesDemo />}
           {view === 'charts' && <ChartsDemo />}
           {view === 'states' && <StatesView />}
+          {view === 'api' && <ApiSurfaceDemo />}
         </main>
       </SidebarInset>
 

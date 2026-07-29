@@ -248,12 +248,23 @@ function Sidebar({
   )
 }
 
+/**
+ * SidebarTrigger — on desktop the sidebar logo is the collapse control (see
+ * Sidebar.jsx), so a second trigger in the page header is redundant and this
+ * renders nothing. Hosts keep their existing `<SidebarTrigger />` markup and
+ * get the new behaviour with no code change. On mobile the sidebar is a sheet
+ * whose logo is unreachable while closed, so the trigger still renders there.
+ * Pass `force` to opt back into always rendering it.
+ */
 function SidebarTrigger({
   className,
   onClick,
+  force = false,
   ...props
-}: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar()
+}: React.ComponentProps<typeof Button> & { force?: boolean }) {
+  const { toggleSidebar, isMobile } = useSidebar()
+
+  if (!force && !isMobile) return null
 
   return (
     <Button

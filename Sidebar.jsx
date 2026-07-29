@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronRight, LogOut } from "lucide-react";
+import { ChevronRight, LogOut, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 import {
   Sidebar as SidebarRoot,
@@ -45,7 +45,12 @@ function NavTarget({ item, children, asSub = false }) {
       <Btn
         onClick={item.onClick}
         tooltip={asSub ? undefined : item.title}
-        className={item.variant === "danger" ? "text-destructive hover:text-destructive" : undefined}
+        isActive={item.__active}
+        className={
+          item.variant === "danger"
+            ? "text-destructive hover:bg-destructive/10 hover:text-destructive"
+            : undefined
+        }
       >
         {children}
       </Btn>
@@ -126,34 +131,49 @@ const Sidebar = ({
   showLogout = false,
   onLogout,
 }) => {
-  const { open } = useSidebar();
+  const { open, toggleSidebar } = useSidebar();
 
-  // Header brand block — logo + title + subtitle, sized/styled to match the
-  // ti-dev AppSidebar (orbitron title, logo shrinks in icon mode).
-  const headerContent = (
-    <>
-      {logo && (
-        <img
-          src={logo}
-          alt={title || "logo"}
-          className="size-9 shrink-0 object-contain transition-[width,height] duration-200 group-data-[collapsible=icon]:size-8"
-        />
+  // Logo doubles as the collapse control: on hover it cross-fades into a panel
+  // icon and clicking it toggles the rail. In icon mode it is the only
+  // affordance left, so it is also how the sidebar gets re-opened.
+  const logoToggle = logo ? (
+    <button
+      type="button"
+      onClick={toggleSidebar}
+      aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
+      title={open ? "Collapse sidebar" : "Expand sidebar"}
+      className="group/logo relative grid size-9 shrink-0 place-items-center rounded-md transition-[width,height,background-color] duration-200 hover:bg-sidebar-accent group-data-[collapsible=icon]:size-8"
+    >
+      <img
+        src={logo}
+        alt={title || "logo"}
+        className="size-full object-contain transition-opacity duration-200 group-hover/logo:opacity-0"
+      />
+      <span className="absolute inset-0 grid place-items-center text-sidebar-foreground opacity-0 transition-opacity duration-200 group-hover/logo:opacity-100">
+        {open ? (
+          <PanelLeftClose className="size-5" />
+        ) : (
+          <PanelLeftOpen className="size-5" />
+        )}
+      </span>
+    </button>
+  ) : null;
+
+  // Brand text — title + subtitle, sized/styled to match the ti-dev
+  // AppSidebar (orbitron title). Hidden by shadcn in icon mode.
+  const headerText = (title || subtitle) && (
+    <div className="grid min-w-0 flex-1 text-left leading-tight">
+      {title && (
+        <span className="truncate font-orbitron text-sm font-semibold text-sidebar-foreground">
+          {title}
+        </span>
       )}
-      {(title || subtitle) && (
-        <div className="grid min-w-0 flex-1 text-left leading-tight">
-          {title && (
-            <span className="truncate font-orbitron text-sm font-semibold text-sidebar-foreground">
-              {title}
-            </span>
-          )}
-          {subtitle && (
-            <span className="truncate text-xs text-sidebar-foreground/70">
-              {subtitle}
-            </span>
-          )}
-        </div>
+      {subtitle && (
+        <span className="truncate text-xs text-sidebar-foreground/70">
+          {subtitle}
+        </span>
       )}
-    </>
+    </div>
   );
 
   // Preserve the legacy onOpenChange contract (host offsets / reacts to state).
@@ -172,19 +192,27 @@ const Sidebar = ({
   return (
     <SidebarRoot collapsible="icon">
       <SidebarHeader className="group-data-[collapsible=icon]:h-14 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:py-0">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild={Boolean(logoHref)}
-              size="lg"
-              tooltip={title || undefined}
-              onClick={!logoHref && typeof onLogoClick === "function" ? onLogoClick : undefined}
-              className="group-data-[collapsible=icon]:p-0!"
-            >
-              {logoHref ? <Link to={logoHref}>{headerContent}</Link> : headerContent}
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <div className="flex h-12 items-center gap-2 px-2 group-data-[collapsible=icon]:h-14 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+          {logoToggle}
+          {headerText &&
+            (logoHref ? (
+              <Link
+                to={logoHref}
+                className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden"
+              >
+                {headerText}
+              </Link>
+            ) : (
+              <div
+                onClick={typeof onLogoClick === "function" ? onLogoClick : undefined}
+                className={`min-w-0 flex-1 group-data-[collapsible=icon]:hidden ${
+                  typeof onLogoClick === "function" ? "cursor-pointer" : ""
+                }`}
+              >
+                {headerText}
+              </div>
+            ))}
+        </div>
       </SidebarHeader>
 
       <SidebarContent>
