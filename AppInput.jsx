@@ -5,11 +5,18 @@
  *
  * Props: value, onChange, placeholder, type, disabled, prefix, suffix, error,
  * size ("sm" | "md"), style (wrapper), inputStyle (inner input), className,
- * onFocus, onBlur, ...rest (forwarded to <input>).
+ * onFocus, onBlur, as ("input" | "textarea"), rows, ...rest (forwarded to
+ * the inner <input>/<textarea>).
+ *
+ * as="textarea" renders the real shadcn Textarea (a <textarea> element) —
+ * <input> physically cannot hold newlines, so multi-line paste into a plain
+ * <input> gets silently flattened to spaces by the browser before React
+ * ever sees it.
  */
 
 import { forwardRef } from 'react';
 import { Input } from './components/ui/input';
+import { Textarea } from './components/ui/textarea';
 import { cn } from './lib/utils';
 
 const SIZE = {
@@ -33,18 +40,20 @@ const AppInput = forwardRef(function AppInput(
     className = '',
     onFocus,
     onBlur,
+    as = 'input',
     ...rest
   },
   ref
 ) {
   const sizeClass = SIZE[size] || SIZE.md;
 
-  // Simple case: no affixes — render the shadcn Input directly.
+  // Simple case: no affixes — render the shadcn Input/Textarea directly.
   if (!prefix && !suffix) {
+    const Field = as === 'textarea' ? Textarea : Input;
     return (
-      <Input
+      <Field
         ref={ref}
-        type={type}
+        type={as === 'textarea' ? undefined : type}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
@@ -52,7 +61,7 @@ const AppInput = forwardRef(function AppInput(
         aria-invalid={error || undefined}
         onFocus={onFocus}
         onBlur={onBlur}
-        className={cn(sizeClass, className)}
+        className={cn(as === 'textarea' ? '' : sizeClass, className)}
         style={{ ...style, ...inputStyle }}
         {...rest}
       />

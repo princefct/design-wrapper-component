@@ -147,12 +147,24 @@ function PlainSelect({
       >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>
-        {items.map((opt) => (
-          <SelectItem key={opt.value} value={String(opt.value)}>
-            {opt.label}
-          </SelectItem>
-        ))}
+      {/* "popper" positioning: the default "item-aligned" mode computes its
+          position assuming normal document flow and is unreliable when the
+          trigger sits inside a position:fixed overlay (e.g. a modal) — it
+          can render off-screen or misaligned. "popper" anchors purely off
+          the trigger's viewport rect via floating-ui, which works inside
+          fixed-position ancestors. */}
+      <SelectContent position="popper">
+        {items.length === 0 ? (
+          <div className="px-2 py-1.5 text-sm text-muted-foreground">
+            No options available
+          </div>
+        ) : (
+          items.map((opt) => (
+            <SelectItem key={opt.value} value={String(opt.value)}>
+              {opt.label}
+            </SelectItem>
+          ))
+        )}
       </SelectContent>
     </Select>
   );
